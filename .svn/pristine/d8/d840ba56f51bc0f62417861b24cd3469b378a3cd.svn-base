@@ -1,0 +1,134 @@
+import { defineConfig, loadEnv } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
+import vue from '@vitejs/plugin-vue'
+import { fileURLToPath, URL } from 'node:url'
+import { resolve } from 'path'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+
+// https://vite.dev/config/
+export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production'
+  const env = loadEnv(mode, process.cwd())
+  const { VITE_APP_ENV } = env
+
+  return {
+    base: VITE_APP_ENV === 'production' ? '/' : '/',
+    plugins: [
+      tailwindcss(),
+      vue(),
+      // 自动导入
+      AutoImport({
+        // 自动导入Vue等相关函数
+        imports: ['vue', 'vue-router', 'pinia'],
+        // 解析Element Plus组件
+        resolvers: [ElementPlusResolver()],
+        // 生成相应的类型声明文件
+        dts: 'src/auto-imports.d.ts',
+      }),
+      // 组件自动注册
+      Components({
+        // 自动注册组件的目录
+        dirs: ['src/components'],
+        // Element Plus组件和图标自动导入
+        resolvers: [
+          ElementPlusResolver(),
+          // 图标组件自动注册
+          IconsResolver({
+            enabledCollections: ['ep']
+          })
+        ],
+        // 生成相应的类型声明文件
+        dts: 'src/components.d.ts',
+      }),
+      // 图标支持
+      Icons({
+        // 自动安装图标
+        autoInstall: true,
+      }),
+    ],
+    
+    // 开发服务器配置
+    server: {
+      host: '0.0.0.0',
+      port: 3000,
+      open: true,
+      cors: true,
+      proxy: {
+        // 配置代理
+        '/api': {
+          target: env.API_BASE_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    },
+    
+    // 打包配置
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: isProd,
+          drop_debugger: isProd
+        }
+      },
+      // 分块打包配置
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vue: ['vue', 'vue-router', 'pinia'],
+            'element-plus': ['element-plus'],
+          }
+        }
+      },
+      // 启用源码映射
+      sourcemap: !isProd,
+      // 启用CSS代码分离
+      cssCodeSplit: true,
+      // 启用brotli压缩
+      brotliSize: true,
+      // 设置chunk大小警告的限制
+      chunkSizeWarningLimit: 2000
+    },
+    
+    // CSS 配置
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@use "@styles/variables.scss" as *;'
+        }
+      },
+      postcss: {
+        plugins: [
+        ]
+      }
+    },
+    
+    // 路径别名
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+        '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
+        '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
+        '@styles': fileURLToPath(new URL('./src/styles', import.meta.url))
+      },
+      extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue']
+    },
+    
+    // 全局变量配置
+    define: {
+      'process.env': {
+        ...env,
+        MODE: mode
+      }
+    }
+  }
+})

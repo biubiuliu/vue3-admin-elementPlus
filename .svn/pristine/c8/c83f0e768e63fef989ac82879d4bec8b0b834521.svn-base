@@ -1,0 +1,185 @@
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import AppSidebar from './AppSidebar.vue'
+import AppHeader from './AppHeader.vue'
+import { getMenuRoutes, hasChildRoutes } from '../../router/config'
+
+// 创建侧边栏折叠状态，供子组件共享
+const isCollapse = ref(false)
+
+const toggleCollapse = () => {
+  isCollapse.value = !isCollapse.value
+}
+
+// 获取布局类型（从localStorage读取，默认为'sidebar'）
+const layoutType = ref(localStorage.getItem('layoutType') || 'sidebar')
+
+// 顶部菜单的菜单项配置
+const topMenuItems = [
+  {
+    title: '仪表盘',
+    path: '/dashboard'
+  },
+  {
+    title: '用户管理',
+    path: '/users'
+  },
+  {
+    title: '系统设置',
+    path: '/settings',
+    children: [
+      {
+        title: '项目设置',
+        path: '/settings/project'
+      },
+      {
+        title: '用户设置',
+        path: '/settings/user'
+      },
+      {
+        title: '安全设置',
+        path: '/settings/security'
+      }
+    ]
+  }
+]
+
+// 计算当前路由是否需要显示侧边栏
+const route = useRoute()
+const isSubRoute = computed(() => {
+  const currentPath = route.path
+  
+  // 检查当前路径是否有子路由或者是子路由
+  // 如果当前路径有子路由或者是某个路径的子路由，则显示侧边栏
+  return hasChildRoutes(currentPath) || currentPath.split('/').filter(Boolean).length > 1
+})
+
+// 监听路由变化，以便正确更新isSubRoute
+watch(() => route.path, () => {
+  // 仅用于触发重新计算isSubRoute
+}, { immediate: true })
+</script>
+
+<template>
+  <div class="app-container" :class="{ 'top-layout': layoutType === 'top' }">
+    <!-- 侧边栏布局 -->
+    <template v-if="layoutType === 'sidebar'">
+      <app-sidebar :is-collapse="isCollapse" />
+      <div class="main-container">
+        <app-header :is-collapse="isCollapse" @toggle-collapse="toggleCollapse" />
+        <div class="content-container">
+          <router-view />
+        </div>
+      </div>
+    </template>
+    
+    <!-- 顶部布局 -->
+    <template v-else>
+      <div class="top-layout-container">
+        <div class="top-header">
+          <div class="logo-area">
+            <img src="/logo.png" class="logo" alt="系统logo" />
+            <h2 class="title">管理系统</h2>
+          </div>
+          <app-header 
+            :is-collapse="isCollapse" 
+            @toggle-collapse="toggleCollapse" 
+            :layout-type="layoutType"
+          />
+        </div>
+        
+        <div class="body-container">
+          <!-- 子路由菜单侧边栏 - 仅在子路由时显示 -->
+          <app-sidebar 
+            v-if="isSubRoute"
+            :is-collapse="isCollapse" 
+            :layout-type="layoutType" 
+            class="sub-sidebar"
+          />
+          
+          <div class="content-container">
+            <router-view />
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+
+<style scoped>
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.app-container.top-layout {
+  display: block;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-container {
+  padding: 20px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #f0f2f5;
+}
+
+/* 顶部布局样式 */
+.top-layout-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-header {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background-color: #fff;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 30px;
+  margin-right: 10px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #303133;
+}
+
+.body-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.sub-sidebar {
+  width: 220px;
+  background-color: #001529;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.1);
+}
+
+.top-layout .content-container {
+  height: calc(100vh - 60px);
+  flex: 1;
+}
+</style> 

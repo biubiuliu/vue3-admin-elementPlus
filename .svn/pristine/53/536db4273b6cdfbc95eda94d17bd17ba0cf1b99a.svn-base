@@ -1,0 +1,195 @@
+// 导入图标组件
+import { Menu, User, Setting } from '@element-plus/icons-vue'
+
+/**
+ * 系统路由和菜单统一配置
+ * icon: 菜单图标
+ * title: 菜单标题
+ * path: 路由路径
+ * component: 路由组件
+ * meta: 路由元信息
+ * children: 子路由/子菜单
+ * hidden: 是否在菜单中隐藏
+ */
+export const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
+    meta: { title: '登录', requiresAuth: false },
+    hidden: true // 不在菜单中显示
+  },
+  {
+    path: '/',
+    component: () => import('../components/layout/AppLayout.vue'),
+    redirect: '/dashboard',
+    hidden: true // 根路由不在菜单中显示
+  },
+  {
+    icon: Menu,
+    title: '仪表盘',
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('../views/Dashboard.vue'),
+    meta: { title: '仪表盘', requiresAuth: true }
+  },
+  {
+    icon: User,
+    title: '用户管理',
+    path: '/users',
+    name: 'UserManagement',
+    component: () => import('../views/UserManagement.vue'),
+    meta: { title: '用户管理', requiresAuth: true }
+  },
+  {
+    icon: Setting,
+    title: '系统设置',
+    path: '/settings',
+    name: 'Settings',
+    component: () => import('../views/Settings.vue'),
+    meta: { title: '系统设置', requiresAuth: true },
+    children: [
+      {
+        icon: Setting,
+        title: '项目设置',
+        path: '/settings/project',
+        name: 'ProjectSettings',
+        component: () => import('../views/setting/ProjectSettings.vue'),
+        meta: { title: '项目设置', requiresAuth: true }
+      },
+      {
+        icon: Setting,
+        title: '用户设置',
+        path: '/settings/user',
+        name: 'UserSettings',
+        component: () => import('../views/setting/UserSettings.vue'),
+        meta: { title: '用户设置', requiresAuth: true }
+      },
+      {
+        icon: Setting,
+        title: '安全设置',
+        path: '/settings/security',
+        name: 'SecuritySettings',
+        component: () => import('../views/setting/SecuritySettings.vue'),
+        meta: { title: '安全设置', requiresAuth: true }
+      }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue'),
+    meta: { title: '404', requiresAuth: false },
+    hidden: true // 不在菜单中显示
+  }
+]
+
+/**
+ * 获取用于菜单显示的路由
+ * @returns 过滤后的菜单项
+ */
+export const getMenuRoutes = () => {
+  return routes.filter(route => !route.hidden)
+}
+
+/**
+ * 获取路由表所需的格式化路由
+ * @returns 格式化后的路由配置
+ */
+export const getFormattedRoutes = () => {
+  const formattedRoutes = []
+  
+  // 添加登录路由
+  const loginRoute = routes.find(r => r.path === '/login')
+  if (loginRoute) {
+    formattedRoutes.push(loginRoute)
+  }
+  
+  // 添加主布局路由及其子路由
+  const layoutRoute = routes.find(r => r.path === '/')
+  if (layoutRoute) {
+    // 创建一个新的主布局路由对象
+    const mainRoute = {
+      ...layoutRoute,
+      children: []
+    }
+    
+    // 将所有非隐藏路由添加为主布局的子路由
+    routes.forEach(route => {
+      if (route.path !== '/' && route.path !== '/login' && route.path !== '/:pathMatch(.*)*') {
+        // 如果有子路由
+        if (route.children) {
+          const parentRoute = { ...route }
+          delete parentRoute.children
+          mainRoute.children.push(parentRoute)
+          
+          // 添加所有子路由
+          route.children.forEach(child => {
+            mainRoute.children.push(child)
+          })
+        } else {
+          mainRoute.children.push(route)
+        }
+      }
+    })
+    
+    formattedRoutes.push(mainRoute)
+  }
+  
+  // 添加404路由
+  const notFoundRoute = routes.find(r => r.path === '/:pathMatch(.*)*')
+  if (notFoundRoute) {
+    formattedRoutes.push(notFoundRoute)
+  }
+  
+  return formattedRoutes
+}
+
+/**
+ * 获取指定路径的路由信息
+ * @param {string} path 路由路径
+ * @returns 路由配置对象
+ */
+export const getRouteByPath = (path) => {
+  // 在顶级路由中查找
+  const route = routes.find(r => r.path === path)
+  if (route) return route
+  
+  // 在子路由中查找
+  for (const r of routes) {
+    if (r.children) {
+      const childRoute = r.children.find(child => child.path === path)
+      if (childRoute) return childRoute
+    }
+  }
+  
+  return null
+}
+
+/**
+ * 获取指定路径的父路由
+ * @param {string} path 子路由路径
+ * @returns 父路由对象
+ */
+export const getParentRoute = (path) => {
+  for (const route of routes) {
+    if (route.children) {
+      const isChild = route.children.some(child => child.path === path)
+      if (isChild) return route
+    }
+  }
+  
+  return null
+}
+
+/**
+ * 判断路由是否有子路由
+ * @param {string} path 路由路径
+ * @returns 布尔值
+ */
+export const hasChildRoutes = (path) => {
+  const route = routes.find(r => r.path === path)
+  return !!(route && route.children && route.children.length > 0)
+}
+
+export default routes 

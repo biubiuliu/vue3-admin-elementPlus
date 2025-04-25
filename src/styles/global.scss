@@ -1,0 +1,131 @@
+
+/* 重置样式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background-color: #f5f7f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $border-color-lighter;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-color-base;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $border-color-light;
+}
+
+/* 链接样式 */
+a {
+  color: $primary-color;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* 常用工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mt-1 { margin-top: $spacing-small; }
+.mt-2 { margin-top: $spacing-base; }
+.mt-3 { margin-top: $spacing-large; }
+.mt-4 { margin-top: $spacing-extra-large; }
+
+.mb-1 { margin-bottom: $spacing-small; }
+.mb-2 { margin-bottom: $spacing-base; }
+.mb-3 { margin-bottom: $spacing-large; }
+.mb-4 { margin-bottom: $spacing-extra-large; }
+
+.ml-1 { margin-left: $spacing-small; }
+.ml-2 { margin-left: $spacing-base; }
+.ml-3 { margin-left: $spacing-large; }
+.ml-4 { margin-left: $spacing-extra-large; }
+
+.mr-1 { margin-right: $spacing-small; }
+.mr-2 { margin-right: $spacing-base; }
+.mr-3 { margin-right: $spacing-large; }
+.mr-4 { margin-right: $spacing-extra-large; }
+
+/* 元素过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+/* 响应式布局辅助类 */
+@media screen and (max-width: 992px) {
+  .hidden-sm-and-down {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .hidden-xs-and-down {
+    display: none !important;
+  }
+} 

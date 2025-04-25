@@ -1,0 +1,140 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import StatCard from '../components/dashboard/StatCard.vue'
+import { User, View, ShoppingCart, Money } from '@element-plus/icons-vue'
+
+const timeRange = ref('week')
+
+const stats = ref([
+  { title: '总用户数', value: '1,256', icon: 'User', color: '#409EFF' },
+  { title: '今日访问', value: '332', icon: 'View', color: '#67C23A' },
+  { title: '订单总数', value: '8,546', icon: 'ShoppingCart', color: '#E6A23C' },
+  { title: '总收入', value: '¥256,000', icon: 'Money', color: '#F56C6C' }
+])
+</script>
+
+<template>
+  <div class="dashboard">
+    <h2 class="page-title">仪表盘</h2>
+    
+    <div class="stats-container">
+      <stat-card 
+        v-for="(stat, index) in stats" 
+        :key="index" 
+        :title="stat.title" 
+        :value="stat.value" 
+        :icon="stat.icon" 
+        :color="stat.color"
+      />
+    </div>
+    
+    <div class="chart-container">
+      <el-row :gutter="20">
+        <el-col :span="16">
+          <el-card class="chart-card">
+            <template #header>
+              <div class="card-header">
+                <span>访问统计</span>
+                <el-radio-group v-model="timeRange" size="small">
+                  <el-radio-button value="week">本周</el-radio-button>
+                  <el-radio-button value="month">本月</el-radio-button>
+                  <el-radio-button value="year">全年</el-radio-button>
+                </el-radio-group>
+              </div>
+            </template>
+            <div class="chart-placeholder">
+              折线图区域
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card class="chart-card">
+            <template #header>
+              <div class="card-header">
+                <span>用户分布</span>
+              </div>
+            </template>
+            <div class="chart-placeholder">
+              饼图区域
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+    
+    <el-card class="recent-activity">
+      <template #header>
+        <div class="card-header">
+          <span>最近活动</span>
+          <el-button class="button" link>查看全部</el-button>
+        </div>
+      </template>
+      <el-table :data="[]" style="width: 100%">
+        <el-table-column prop="date" label="日期" width="180" />
+        <el-table-column prop="name" label="用户" width="180" />
+        <el-table-column prop="action" label="操作" />
+        <el-table-column prop="status" label="状态" width="120" />
+      </el-table>
+    </el-card>
+  </div>
+</template>
+
+<style scoped>
+.dashboard {
+  padding: 10px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #303133;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.chart-container {
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-placeholder {
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f7fa;
+  color: #909399;
+  font-size: 14px;
+}
+
+.recent-activity {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}
+</style> 

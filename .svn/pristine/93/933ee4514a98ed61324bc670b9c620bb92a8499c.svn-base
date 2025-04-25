@@ -1,0 +1,149 @@
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+
+// 项目表单
+const projectForm = reactive({
+  name: '后台管理系统',
+  description: '基于Vue3的后台管理系统',
+  version: '1.0.0',
+  apiBase: 'https://api.example.com',
+  allowRegistration: true,
+  theme: 'light',
+  layoutType: localStorage.getItem('layoutType') || 'sidebar' // 默认布局类型
+})
+
+// 布局选项
+const layoutOptions = [
+  { label: '侧边栏布局', value: 'sidebar' },
+  { label: '顶部导航布局', value: 'top' }
+]
+
+// 主题选项
+const themeOptions = [
+  { label: '亮色主题', value: 'light' },
+  { label: '暗色主题', value: 'dark' },
+  { label: '跟随系统', value: 'system' }
+]
+
+// 初始化时从localStorage读取布局设置
+onMounted(() => {
+  projectForm.layoutType = localStorage.getItem('layoutType') || 'sidebar'
+})
+
+// 切换布局时保存到localStorage
+const changeLayout = (value) => {
+  localStorage.setItem('layoutType', value)
+  ElMessage.success('布局已切换，部分页面需要刷新生效')
+}
+
+// 保存设置
+const saveSettings = () => {
+  // 保存布局类型
+  localStorage.setItem('layoutType', projectForm.layoutType)
+  
+  // 显示保存成功提示
+  ElMessage.success('项目设置保存成功')
+}
+
+// 刷新页面函数
+const refreshPage = () => {
+  try {
+    window.location.reload()
+  } catch (error) {
+    console.error('刷新页面时出错:', error)
+    ElMessage.error('刷新页面失败，请手动刷新')
+  }
+}
+</script>
+
+<template>
+  <div class="project-settings">
+    <h2 class="page-title">项目设置</h2>
+    
+    <el-card class="settings-card">
+      <el-form :model="projectForm" label-width="120px">
+        <el-form-item label="项目名称">
+          <el-input v-model="projectForm.name" />
+        </el-form-item>
+        
+        <el-form-item label="项目描述">
+          <el-input 
+            v-model="projectForm.description" 
+            type="textarea" 
+            :rows="3"
+          />
+        </el-form-item>
+        
+        <el-form-item label="版本号">
+          <el-input v-model="projectForm.version" />
+        </el-form-item>
+        
+        <el-form-item label="API基础路径">
+          <el-input v-model="projectForm.apiBase" />
+        </el-form-item>
+        
+        <el-form-item label="允许注册">
+          <el-switch v-model="projectForm.allowRegistration" />
+        </el-form-item>
+        
+        <el-form-item label="系统主题">
+          <el-radio-group v-model="projectForm.theme">
+            <el-radio 
+              v-for="option in themeOptions" 
+              :value="option.value" 
+            >
+              {{ option.label }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        
+        <el-form-item label="布局方式">
+          <el-radio-group 
+            v-model="projectForm.layoutType"
+            @change="changeLayout"
+          >
+            <el-radio 
+              v-for="option in layoutOptions" 
+              :value="option.value" 
+            >
+              {{ option.label }}
+            </el-radio>
+          </el-radio-group>
+          <div class="layout-description">
+            <el-text type="info">
+              切换布局后部分页面需要刷新才能完全生效
+            </el-text>
+          </div>
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button type="primary" @click="saveSettings">保存设置</el-button>
+          <el-button @click="refreshPage">刷新页面</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+  </div>
+</template>
+
+<style scoped>
+.project-settings {
+  padding: 10px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #303133;
+}
+
+.settings-card {
+  margin-bottom: 20px;
+}
+
+.layout-description {
+  margin-top: 8px;
+  font-size: 12px;
+}
+</style> 
