@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 项目结构概览
+
+## 核心文件
+
+- 入口文件：[src/main.js](mdc:src/main.js) - 应用初始化配置
+- 主组件：[src/App.vue](mdc:src/App.vue) - 应用的根组件
+- 路由配置：[src/router/index.js](mdc:src/router/index.js) - 路由初始化和导航守卫
+- 路由定义：[src/router/config.js](mdc:src/router/config.js) - 详细路由配置
+
+## 主要目录
+
+- `src/views/` - 页面级组件
+- `src/components/` - 可复用组件
+- `src/stores/` - Pinia 状态管理
+- `src/utils/` - 工具函数
+- `src/assets/` - 静态资源
+- `src/styles/` - 样式文件
+

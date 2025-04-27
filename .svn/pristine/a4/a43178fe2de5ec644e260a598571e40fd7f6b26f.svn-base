@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 组件指南
+
+## 布局组件
+
+- `src/components/layout/` - 包含页面布局相关组件
+
+## 功能组件
+
+- `src/components/menu/` - 导航菜单相关组件
+- `src/components/dashboard/` - 仪表盘相关组件
+
+## 自动导入
+
+项目使用了 unplugin-vue-components 插件实现组件自动导入，无需手动导入以下组件：
+
+- Element Plus 组件 (如 `el-button`, `el-input` 等)
+- 项目中 `src/components` 目录下的组件
+
+详细的自动导入组件列表请查看 [components.d.ts](mdc:src/components.d.ts) 文件。
+
+## 组件开发规范
+
+- 组件命名使用 PascalCase 格式
+- 页面级组件放在 `src/views/` 目录
+- 可复用组件放在 `src/components/` 目录
+- 大型功能模块可创建对应子目录
+

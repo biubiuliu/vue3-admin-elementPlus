@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 技术栈
+
+## 核心框架
+
+- Vue 3 - 前端框架
+- Vue Router 4 - 路由管理
+- Pinia - 状态管理
+- Element Plus - UI组件库
+- Tailwind CSS - 实用工具CSS框架
+
+## 构建工具
+
+- Vite - 开发服务器和构建工具
+- SASS - CSS预处理器
+
+## 插件
+
+- unplugin-auto-import - 自动导入APIs
+- unplugin-vue-components - 自动导入组件
+- unplugin-icons - 图标解决方案
+
+## 使用说明
+
+- 组件自动导入：在 [components.d.ts](mdc:src/components.d.ts) 中查看已自动注册的组件
+- API自动导入：在 [auto-imports.d.ts](mdc:src/auto-imports.d.ts) 中查看已自动导入的API
+
